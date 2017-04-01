@@ -15,6 +15,8 @@
  */
 package org.terasology.projectile;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.terasology.engine.Time;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
@@ -28,6 +30,7 @@ import org.terasology.logic.health.DoDamageEvent;
 import org.terasology.logic.health.HealthComponent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.inventory.InventoryUtils;
+import org.terasology.logic.inventory.events.DropItemEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.physics.CollisionGroup;
@@ -41,6 +44,10 @@ import org.terasology.registry.In;
  */
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class ProjectileAuthoritySystem extends BaseComponentSystem implements UpdateSubscriberSystem {
+    final int TERMINAL_VELOCITY = 40;
+    final float G = 20f;
+    private static final Logger logger = LoggerFactory.getLogger(ProjectileAuthoritySystem.class);
+
     @In
     private InventoryManager inventoryManager;
 
@@ -71,6 +78,7 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
             int slot = InventoryUtils.getSlotWithItem(event.getInstigator(), entity);
             inventoryManager.removeItem(event.getInstigator(), event.getInstigator(), slot, false, 1);
             projectileActionComponent.direction = new Vector3f(event.getDirection());
+            projectileActionComponent.currentVelocity = new Vector3f(event.getDirection()).mul(projectileActionComponent.velocity);
             Vector3f pos = event.getOrigin();
             entity.addOrSaveComponent(new LocationComponent(pos.add(projectileActionComponent.direction)));
             entity.saveComponent(projectileActionComponent);
@@ -79,18 +87,14 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
         }
     }
 
-    private void damageEntityWithHealth(EntityRef blockEntity, EntityRef entity) {
-        ProjectileActionComponent projectile = entity.getComponent(ProjectileActionComponent.class);
-        HealthComponent health = entity.getComponent(HealthComponent.class);
-        int oldBlockHealth = blockEntity.getComponent(HealthComponent.class).currentHealth;
-        blockEntity.send(new DoDamageEvent(health.currentHealth, projectile.damageType));
-        int newBlockHealth = 0;
-        if(blockEntity.exists())
-            newBlockHealth = blockEntity.getComponent(HealthComponent.class).currentHealth;
-        // inflict same amount of damage on fireball as on the target
-        entity.send(new DoDamageEvent(oldBlockHealth - newBlockHealth, projectile.damageType));
+    /*
+     * Deactivates the projectile
+     */
+    @ReceiveEvent
+    private void onDeactivate(DeactivateProjectileEvent event, EntityRef entity, ProjectileActionComponent projectile){
+        entity.saveComponent(entity.getParentPrefab().getComponent(ProjectileActionComponent.class));
+        entity.send(new DropItemEvent());
     }
-
     /*
      * Updates the state of fired projectiles
      */
@@ -98,18 +102,18 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
     public void update(float delta) {
         for (EntityRef entity : entityManager.getEntitiesWith(ProjectileActionComponent.class)) {
             ProjectileActionComponent projectile = entity.getComponent(ProjectileActionComponent.class);
-            if(projectile.direction == null) // not been fired
+            if(projectile.direction == null || entity.getComponent(LocationComponent.class) == null) // not been fired
                 continue;
 
-            if(projectile.distanceTravelled >= projectile.maxDistance) {
+            if(projectile.distanceTravelled >= projectile.maxDistance && projectile.maxDistance != -1) {
                 entity.destroy();
                 continue;
             }
 
             Vector3f position = entity.getComponent(LocationComponent.class).getWorldPosition();
-
-            float displacement = delta * projectile.velocity;
+            projectile.direction = new Vector3f(projectile.currentVelocity).normalize();
             HitResult result;
+            float displacement = projectile.currentVelocity.length();
             result = physicsRenderer.rayTrace(position, projectile.direction, displacement, filter);
 
             if(result.isHit()) {
@@ -126,15 +130,16 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
                 }
                 entity.send(new HitTargetEvent(blockEntity, entity, new Vector3f(),
                         projectile.direction, result.getHitPoint(), result.getHitNormal()));
-                //damageEntityWithHealth(blockEntity, entity);
-                if(!entity.exists()) {
+                if(!entity.exists() || entity.getComponent(ProjectileActionComponent.class).direction == null) {
                     continue;
                 }
             }
 
-            Vector3f direction = new Vector3f(projectile.direction);
-            position.add(direction.mul(displacement));
-
+            position.add(projectile.currentVelocity);
+            if(projectile.affectedByGravity && Math.abs(projectile.currentVelocity.getY()) < TERMINAL_VELOCITY) {
+                float update = G * (float) Math.pow(delta, 2);
+                projectile.currentVelocity.subY(update);
+            }
             projectile.distanceTravelled += displacement;
             entity.addOrSaveComponent(new LocationComponent(position));
             entity.addOrSaveComponent(projectile);

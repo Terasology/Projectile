@@ -25,27 +25,48 @@ import org.terasology.math.geom.Vector3f;
  */
 public class ProjectileActionComponent implements Component{
     /**
-     * The direction of the fireball.
+     * is reusable?
+     */
+    public boolean reusable = false;
+
+    /**
+     * Whether projectile is affected by gravity.
+     */
+    public boolean affectedByGravity = false;
+
+    /**
+     * The current velocity of projectile.
+     */
+    public Vector3f currentVelocity = null;
+
+    /**
+     * The resistance against movement of projectile (proportional to surface area
+     * and how aerodynamic the projectile is).
+     */
+    public float frictionCoefficient = 0.1f;
+
+    /**
+     * The direction of the projectile.
      */
     public Vector3f direction = null;
 
     /**
-     * The distance travelled by the fireball.
+     * The distance travelled by the projectile.
      */
     public float distanceTravelled = 0;
 
     /**
-     * The velocity of the fireball.
+     * The velocity of the projectile.
      */
-    public int velocity = 7;
+    public float velocity = 1;
 
     /**
-     * The max distance the fireball will fly.
+     * The max distance the projectile will fly.
      */
     public int maxDistance = 24;
 
     /**
-     * The damage the fireball does
+     * The damage the projectile does
      */
     public int damageAmount = 3;
 
