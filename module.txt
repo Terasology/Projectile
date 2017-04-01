@@ -1,0 +1,14 @@
+{
+    "id": "Projectile",
+    "version": "1.0.0",
+    "author": "niksoc",
+    "displayName": "Projectile",
+    "description": "Base module for projectile weapons",
+    "dependencies": [
+        {
+            "id" : "Core",
+            "minVersion" : "1.0.0"
+        }
+     ],
+    "serverSideOnly": false
+}
