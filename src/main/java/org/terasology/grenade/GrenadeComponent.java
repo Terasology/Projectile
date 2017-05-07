@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.projectile;
+package org.terasology.grenade;
 
-import org.terasology.entitySystem.event.AbstractConsumableEvent;
-import org.terasology.math.geom.Vector3f;
+import org.terasology.entitySystem.Component;
 
 /**
  * Created by nikhil on 1/4/17.
  */
-public class DeactivateProjectileEvent extends AbstractConsumableEvent {
+public class GrenadeComponent implements Component {
 }

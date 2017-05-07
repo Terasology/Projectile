@@ -1,0 +1,19 @@
+{
+    "name": "Projectile:grenade",
+    "parent": "engine:iconItem",
+    "DisplayName": {
+        "name": "Grenade"
+    },
+    "Item": {
+        "icon": "Projectile:Grenade",
+        "damageType": "Projectile:grenadeDmg",
+        "usage": "IN_DIRECTION",
+        "consumedOnUse":false
+    },
+    "Grenade": {},
+    "ProjectileAction": {
+        "affectedByGravity": true,
+        "maxDistance": -1,
+        "velocity": 3
+    }
+}

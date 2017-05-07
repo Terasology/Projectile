@@ -13,29 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.projectile;
+package org.terasology.fireball;
 
 import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.entitySystem.event.EventPriority;
 import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.logic.health.DoDamageEvent;
-import org.terasology.logic.inventory.events.DropItemEvent;
-import org.terasology.logic.location.LocationComponent;
+import org.terasology.logic.health.HealthComponent;
+import org.terasology.projectile.HitTargetEvent;
+import org.terasology.projectile.ProjectileActionComponent;
 
 /**
  * Created by nikhil on 1/4/17.
  */
 @RegisterSystem(RegisterMode.AUTHORITY)
-public class ProjectileCollisionHandler extends BaseComponentSystem {
-    // Set handler to low priority as it contains override-able default behaviour
-    @ReceiveEvent(priority = EventPriority.PRIORITY_LOW)
+public class FireballCollisionHandler extends BaseComponentSystem {
+    @ReceiveEvent(components = {FireballComponent.class})
     public void onCollision(HitTargetEvent event, EntityRef entity, ProjectileActionComponent projectile) {
-        event.getTarget().send(new DoDamageEvent(projectile.damageAmount, projectile.damageType));
-        //reset ProjectileActionComponent to defaults and drop item
-        entity.saveComponent(entity.getParentPrefab().getComponent(ProjectileActionComponent.class));
-        entity.send(new DropItemEvent(entity.getComponent(LocationComponent.class).getWorldPosition()));
+        EntityRef blockEntity = event.getTarget();
+        HealthComponent health = entity.getComponent(HealthComponent.class);
+        int oldBlockHealth = blockEntity.getComponent(HealthComponent.class).currentHealth;
+        blockEntity.send(new DoDamageEvent(health.currentHealth, projectile.damageType));
+        int newBlockHealth = 0;
+        if(blockEntity.exists())
+            newBlockHealth = blockEntity.getComponent(HealthComponent.class).currentHealth;
+        // inflict same amount of damage on fireball as on the target
+        entity.send(new DoDamageEvent(oldBlockHealth - newBlockHealth, projectile.damageType));
+        event.consume();
     }
 }

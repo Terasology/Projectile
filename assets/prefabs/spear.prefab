@@ -1,0 +1,19 @@
+{
+    "name": "Projectile:spear",
+    "parent": "engine:iconItem",
+    "DisplayName": {
+        "name": "Spear"
+    },
+    "Item": {
+        "icon": "Projectile:Spear",
+        "damageType": "Projectile:spearDmg",
+        "usage": "IN_DIRECTION",
+        "consumedOnUse": false
+    },
+    "ProjectileAction": {
+        "affectedByGravity": true,
+        "maxDistance": -1,
+        "velocity": 5,
+        "reusable": true
+    }
+}

@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "author": "niksoc",
     "displayName": "Projectile",
-    "description": "Base module for projectile weapons",
+    "description": "Base module for projectiles",
     "dependencies": [
         {
             "id" : "Core",
