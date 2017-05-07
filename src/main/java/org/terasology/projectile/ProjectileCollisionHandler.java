@@ -35,7 +35,10 @@ public class ProjectileCollisionHandler extends BaseComponentSystem {
     public void onCollision(HitTargetEvent event, EntityRef entity, ProjectileActionComponent projectile) {
         event.getTarget().send(new DoDamageEvent(projectile.damageAmount, projectile.damageType));
         //reset ProjectileActionComponent to defaults and drop item
-        entity.saveComponent(entity.getParentPrefab().getComponent(ProjectileActionComponent.class));
+        projectile.direction = null;
+        projectile.currentVelocity = null;
+        projectile.distanceTravelled = 0;
+        entity.saveComponent(projectile);
         entity.send(new DropItemEvent(entity.getComponent(LocationComponent.class).getWorldPosition()));
     }
 }

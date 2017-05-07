@@ -17,5 +17,7 @@
     },
     "Light": {},
     "Fireball": {},
-    "ProjectileAction": {}
+    "ProjectileAction": {
+        "iconScale": 0.4
+    }
 }

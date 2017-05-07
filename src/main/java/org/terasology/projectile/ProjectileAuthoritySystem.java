@@ -32,6 +32,7 @@ import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.inventory.InventoryUtils;
 import org.terasology.logic.inventory.events.DropItemEvent;
 import org.terasology.logic.location.LocationComponent;
+import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.physics.CollisionGroup;
 import org.terasology.physics.HitResult;
@@ -80,7 +81,10 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
             projectileActionComponent.direction = new Vector3f(event.getDirection());
             projectileActionComponent.currentVelocity = new Vector3f(event.getDirection()).mul(projectileActionComponent.velocity);
             Vector3f pos = event.getOrigin();
-            entity.addOrSaveComponent(new LocationComponent(pos.add(projectileActionComponent.direction)));
+            LocationComponent location = new LocationComponent(pos.add(projectileActionComponent.direction));
+            location.setWorldScale(projectileActionComponent.iconScale);
+            location.setWorldRotation(getRotationQuaternion(projectileActionComponent.initialOrientation, new Vector3f(event.getDirection())));
+            entity.addOrSaveComponent(location);
             entity.saveComponent(projectileActionComponent);
 
             lastTime = time.getGameTime();
@@ -88,11 +92,31 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
     }
 
     /*
-     * Deactivates the projectile
+     * Rotates the projectile in the direction of motion
+     */
+    private Quat4f getRotationQuaternion(Vector3f initialDir, Vector3f finalDir){
+        // rotates the entity to face in the direction of pointer
+        Quat4f rotation = new Quat4f();
+        Vector3f crossProduct = new Vector3f();
+        crossProduct.cross(initialDir, finalDir);
+        rotation.x = crossProduct.x;
+        rotation.y = crossProduct.y;
+        rotation.z = crossProduct.z;
+        rotation.w = (float) (Math.sqrt((initialDir.lengthSquared())*(finalDir.lengthSquared())) +
+                initialDir.dot(finalDir));
+        rotation.normalize();
+        return rotation;
+    }
+
+    /*
+     * Deactivates the projectile ( currently not used )
      */
     @ReceiveEvent
     private void onDeactivate(DeactivateProjectileEvent event, EntityRef entity, ProjectileActionComponent projectile){
-        entity.saveComponent(entity.getParentPrefab().getComponent(ProjectileActionComponent.class));
+        projectile.direction = null;
+        projectile.currentVelocity = null;
+        projectile.distanceTravelled = 0;
+        entity.saveComponent(projectile);
         entity.send(new DropItemEvent());
     }
     /*
@@ -110,7 +134,8 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
                 continue;
             }
 
-            Vector3f position = entity.getComponent(LocationComponent.class).getWorldPosition();
+            LocationComponent location = entity.getComponent(LocationComponent.class);
+            Vector3f position = location.getWorldPosition();
             projectile.direction = new Vector3f(projectile.currentVelocity).normalize();
             HitResult result;
             float displacement = projectile.currentVelocity.length();
@@ -123,7 +148,7 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
                     blockEntity.send(new DoDamageEvent(0, projectile.damageType));
                     if(!blockEntity.hasComponent(HealthComponent.class)) {
                         // if it still doesn't have a health component, it's indestructible
-                        // so destroy our fireball
+                        // so destroy our projectile
                         entity.destroy();
                         continue;
                     }
@@ -136,12 +161,17 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
             }
 
             position.add(projectile.currentVelocity);
+            location.setWorldPosition(position);
+            location.setWorldRotation(getRotationQuaternion(projectile.initialOrientation, projectile.currentVelocity));
+            projectile.distanceTravelled += displacement;
+
             if(projectile.affectedByGravity && Math.abs(projectile.currentVelocity.getY()) < TERMINAL_VELOCITY) {
                 float update = G * (float) Math.pow(delta, 2);
                 projectile.currentVelocity.subY(update);
             }
-            projectile.distanceTravelled += displacement;
-            entity.addOrSaveComponent(new LocationComponent(position));
+
+
+            entity.addOrSaveComponent(location);
             entity.addOrSaveComponent(projectile);
         }
 

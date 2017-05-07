@@ -25,6 +25,18 @@ import org.terasology.math.geom.Vector3f;
  */
 public class ProjectileActionComponent implements Component{
     /**
+     * scaling the projectile icon
+     */
+    public float iconScale = 1f;
+
+    /**
+     * the initial orientation of projectile (must be final)
+     * for eg. for the spear projectile, the icon faces up, so
+     * the initial orientation will be (0,1,0)
+     */
+    public Vector3f initialOrientation = new Vector3f(0, 1, 0);
+
+    /**
      * is reusable?
      */
     public boolean reusable = false;

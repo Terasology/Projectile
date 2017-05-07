@@ -14,6 +14,6 @@
     "ProjectileAction": {
         "affectedByGravity": true,
         "maxDistance": -1,
-        "velocity": 3
+        "iconScale": 0.2
     }
 }
