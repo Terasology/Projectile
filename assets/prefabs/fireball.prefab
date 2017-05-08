@@ -6,6 +6,7 @@
     },
     "Item": {
         "icon": "Projectile:Fireball",
+        "stackId": "Projectile:fireball",
         "damageType": "Projectile:fireballDmg",
         "usage": "IN_DIRECTION",
         "consumedOnUse":false

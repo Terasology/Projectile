@@ -30,6 +30,7 @@ import org.terasology.logic.health.DoDamageEvent;
 import org.terasology.logic.health.HealthComponent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.inventory.InventoryUtils;
+import org.terasology.logic.inventory.ItemComponent;
 import org.terasology.logic.inventory.events.DropItemEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.math.geom.Quat4f;
@@ -77,7 +78,8 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
 
         if (time.getGameTime() > lastTime + 1.0f / projectileActionComponent.projectilesPerSecond) {
             int slot = InventoryUtils.getSlotWithItem(event.getInstigator(), entity);
-            inventoryManager.removeItem(event.getInstigator(), event.getInstigator(), slot, false, 1);
+            entity = inventoryManager.removeItem(event.getInstigator(), event.getInstigator(), slot, false, 1);
+            projectileActionComponent = entity.getComponent(ProjectileActionComponent.class);
             projectileActionComponent.direction = new Vector3f(event.getDirection());
             projectileActionComponent.currentVelocity = new Vector3f(event.getDirection()).mul(projectileActionComponent.velocity);
             Vector3f pos = event.getOrigin();
@@ -86,7 +88,6 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
             location.setWorldRotation(getRotationQuaternion(projectileActionComponent.initialOrientation, new Vector3f(event.getDirection())));
             entity.addOrSaveComponent(location);
             entity.saveComponent(projectileActionComponent);
-
             lastTime = time.getGameTime();
         }
     }
@@ -112,12 +113,12 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
      * Deactivates the projectile ( currently not used )
      */
     @ReceiveEvent
-    private void onDeactivate(DeactivateProjectileEvent event, EntityRef entity, ProjectileActionComponent projectile){
+    public void onDeactivate(DeactivateProjectileEvent event, EntityRef entity, ProjectileActionComponent projectile){
         projectile.direction = null;
         projectile.currentVelocity = null;
         projectile.distanceTravelled = 0;
         entity.saveComponent(projectile);
-        entity.send(new DropItemEvent());
+        entity.send(new DropItemEvent(entity.getComponent(LocationComponent.class).getWorldPosition()));
     }
     /*
      * Updates the state of fired projectiles
@@ -128,9 +129,11 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
             ProjectileActionComponent projectile = entity.getComponent(ProjectileActionComponent.class);
             if(projectile.direction == null || entity.getComponent(LocationComponent.class) == null) // not been fired
                 continue;
-
             if(projectile.distanceTravelled >= projectile.maxDistance && projectile.maxDistance != -1) {
-                entity.destroy();
+                if(projectile.reusable)
+                    entity.send(new DeactivateProjectileEvent());
+                else
+                    entity.destroy();
                 continue;
             }
 
@@ -149,7 +152,10 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
                     if(!blockEntity.hasComponent(HealthComponent.class)) {
                         // if it still doesn't have a health component, it's indestructible
                         // so destroy our projectile
-                        entity.destroy();
+                        if(projectile.reusable)
+                            entity.send(new DeactivateProjectileEvent());
+                        else
+                            entity.destroy();
                         continue;
                     }
                 }
