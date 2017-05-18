@@ -47,7 +47,7 @@ import org.terasology.registry.In;
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class ProjectileAuthoritySystem extends BaseComponentSystem implements UpdateSubscriberSystem {
     final int TERMINAL_VELOCITY = 40;
-    final float G = 20f;
+    final float G = 1f;
     private static final Logger logger = LoggerFactory.getLogger(ProjectileAuthoritySystem.class);
 
     @In
@@ -120,7 +120,7 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
         entity.saveComponent(projectile);
         entity.send(new DropItemEvent(entity.getComponent(LocationComponent.class).getWorldPosition()));
     }
-    /*
+    /**
      * Updates the state of fired projectiles
      */
     @Override
@@ -172,7 +172,7 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
             projectile.distanceTravelled += displacement;
 
             if(projectile.affectedByGravity && Math.abs(projectile.currentVelocity.getY()) < TERMINAL_VELOCITY) {
-                float update = G * (float) Math.pow(delta, 2);
+                float update = G * delta;
                 projectile.currentVelocity.subY(update);
             }
 
