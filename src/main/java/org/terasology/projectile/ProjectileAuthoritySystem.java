@@ -30,7 +30,6 @@ import org.terasology.logic.health.DoDamageEvent;
 import org.terasology.logic.health.HealthComponent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.inventory.InventoryUtils;
-import org.terasology.logic.inventory.ItemComponent;
 import org.terasology.logic.inventory.events.DropItemEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.math.geom.Quat4f;
@@ -41,9 +40,6 @@ import org.terasology.physics.Physics;
 import org.terasology.physics.StandardCollisionGroup;
 import org.terasology.registry.In;
 
-/**
- * Created by nikhil on 28/3/17.
- */
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class ProjectileAuthoritySystem extends BaseComponentSystem implements UpdateSubscriberSystem {
     final int TERMINAL_VELOCITY = 40;
@@ -62,7 +58,7 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
     @In
     private Time time;
 
-    private CollisionGroup filter = StandardCollisionGroup.ALL;
+    private CollisionGroup filter = StandardCollisionGroup.WORLD;
     private float lastTime;
 
     @Override
@@ -80,19 +76,20 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
             int slot = InventoryUtils.getSlotWithItem(event.getInstigator(), entity);
             entity = inventoryManager.removeItem(event.getInstigator(), event.getInstigator(), slot, false, 1);
             projectileActionComponent = entity.getComponent(ProjectileActionComponent.class);
-            projectileActionComponent.direction = new Vector3f(event.getDirection());
-            projectileActionComponent.currentVelocity = new Vector3f(event.getDirection()).mul(projectileActionComponent.velocity);
+            ProjectileMotionComponent projectileMotionComponent = new ProjectileMotionComponent();
+            projectileMotionComponent.direction = new Vector3f(event.getDirection());
+            projectileMotionComponent.currentVelocity = new Vector3f(event.getDirection()).mul(projectileActionComponent.initialVelocity);
             Vector3f pos = event.getOrigin();
-            LocationComponent location = new LocationComponent(pos.add(projectileActionComponent.direction));
+            LocationComponent location = new LocationComponent(pos);
             location.setWorldScale(projectileActionComponent.iconScale);
             location.setWorldRotation(getRotationQuaternion(projectileActionComponent.initialOrientation, new Vector3f(event.getDirection())));
             entity.addOrSaveComponent(location);
-            entity.saveComponent(projectileActionComponent);
+            entity.addComponent(projectileMotionComponent);
             lastTime = time.getGameTime();
         }
     }
 
-    /*
+    /**
      * Rotates the projectile in the direction of motion
      */
     private Quat4f getRotationQuaternion(Vector3f initialDir, Vector3f finalDir){
@@ -109,15 +106,12 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
         return rotation;
     }
 
-    /*
-     * Deactivates the projectile ( currently not used )
+    /**
+     * Deactivates the projectile and drops it as an item
      */
     @ReceiveEvent
-    public void onDeactivate(DeactivateProjectileEvent event, EntityRef entity, ProjectileActionComponent projectile){
-        projectile.direction = null;
-        projectile.currentVelocity = null;
-        projectile.distanceTravelled = 0;
-        entity.saveComponent(projectile);
+    public void onDeactivate(DeactivateProjectileEvent event, EntityRef entity, ProjectileMotionComponent projectileMotion){
+        entity.removeComponent(ProjectileMotionComponent.class);
         entity.send(new DropItemEvent(entity.getComponent(LocationComponent.class).getWorldPosition()));
     }
     /**
@@ -125,11 +119,11 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
      */
     @Override
     public void update(float delta) {
-        for (EntityRef entity : entityManager.getEntitiesWith(ProjectileActionComponent.class)) {
+        for (EntityRef entity : entityManager.getEntitiesWith(ProjectileMotionComponent.class)) {
             ProjectileActionComponent projectile = entity.getComponent(ProjectileActionComponent.class);
-            if(projectile.direction == null || entity.getComponent(LocationComponent.class) == null) // not been fired
-                continue;
-            if(projectile.distanceTravelled >= projectile.maxDistance && projectile.maxDistance != -1) {
+            ProjectileMotionComponent projectileMotion = entity.getComponent(ProjectileMotionComponent.class);
+
+            if(projectileMotion.distanceTravelled >= projectile.maxDistance && projectile.maxDistance != -1) {
                 if(projectile.reusable)
                     entity.send(new DeactivateProjectileEvent());
                 else
@@ -139,17 +133,17 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
 
             LocationComponent location = entity.getComponent(LocationComponent.class);
             Vector3f position = location.getWorldPosition();
-            projectile.direction = new Vector3f(projectile.currentVelocity).normalize();
+            projectileMotion.direction = new Vector3f(projectileMotion.currentVelocity).normalize();
             HitResult result;
-            float displacement = projectile.currentVelocity.length();
-            result = physicsRenderer.rayTrace(position, projectile.direction, displacement, filter);
+            float displacement = projectileMotion.currentVelocity.length();
+            result = physicsRenderer.rayTrace(position, projectileMotion.direction, displacement, filter);
 
             if(result.isHit()) {
-                EntityRef blockEntity = result.getEntity();
-                if(!blockEntity.hasComponent(HealthComponent.class)){
+                EntityRef targetEntity = result.getEntity();
+                if(!targetEntity.hasComponent(HealthComponent.class)){
                     // a hack to induce a HealthComponent in the blockEntity
-                    blockEntity.send(new DoDamageEvent(0, projectile.damageType));
-                    if(!blockEntity.hasComponent(HealthComponent.class)) {
+                    targetEntity.send(new DoDamageEvent(0, projectile.damageType));
+                    if(!targetEntity.hasComponent(HealthComponent.class)) {
                         // if it still doesn't have a health component, it's indestructible
                         // so destroy our projectile
                         if(projectile.reusable)
@@ -159,21 +153,23 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
                         continue;
                     }
                 }
-                entity.send(new HitTargetEvent(blockEntity, entity, new Vector3f(),
-                        projectile.direction, result.getHitPoint(), result.getHitNormal()));
-                if(!entity.exists() || entity.getComponent(ProjectileActionComponent.class).direction == null) {
+                location.setWorldPosition(result.getHitPoint());
+                entity.saveComponent(location);
+                entity.send(new HitTargetEvent(targetEntity, entity, new Vector3f(),
+                        projectileMotion.direction, result.getHitPoint(), result.getHitNormal()));
+                if(!entity.exists() || !entity.hasComponent(ProjectileMotionComponent.class)) {
                     continue;
                 }
             }
 
-            position.add(projectile.currentVelocity);
+            position.add(projectileMotion.currentVelocity);
             location.setWorldPosition(position);
-            location.setWorldRotation(getRotationQuaternion(projectile.initialOrientation, projectile.currentVelocity));
-            projectile.distanceTravelled += displacement;
+            location.setWorldRotation(getRotationQuaternion(projectile.initialOrientation, projectileMotion.currentVelocity));
+            projectileMotion.distanceTravelled += displacement;
 
-            if(projectile.affectedByGravity && Math.abs(projectile.currentVelocity.getY()) < TERMINAL_VELOCITY) {
+            if(projectile.affectedByGravity && Math.abs(projectileMotion.currentVelocity.getY()) < TERMINAL_VELOCITY) {
                 float update = G * delta;
-                projectile.currentVelocity.subY(update);
+                projectileMotion.currentVelocity.subY(update);
             }
 
 

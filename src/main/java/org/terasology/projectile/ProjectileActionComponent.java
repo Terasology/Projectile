@@ -20,9 +20,6 @@ import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.logic.health.EngineDamageTypes;
 import org.terasology.math.geom.Vector3f;
 
-/**
- * Created by nikhil on 28/3/17.
- */
 public class ProjectileActionComponent implements Component{
     /**
      * scaling the projectile icon
@@ -47,30 +44,15 @@ public class ProjectileActionComponent implements Component{
     public boolean affectedByGravity = false;
 
     /**
-     * The current velocity of projectile.
-     */
-    public Vector3f currentVelocity = null;
-
-    /**
      * The resistance against movement of projectile (proportional to surface area
      * and how aerodynamic the projectile is).
      */
     public float frictionCoefficient = 0.1f;
 
     /**
-     * The direction of the projectile.
-     */
-    public Vector3f direction = null;
-
-    /**
-     * The distance travelled by the projectile.
-     */
-    public float distanceTravelled = 0;
-
-    /**
      * The velocity of the projectile.
      */
-    public float velocity = 1;
+    public float initialVelocity = 1;
 
     /**
      * The max distance the projectile will fly.

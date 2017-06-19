@@ -15,7 +15,27 @@
  */
 package org.terasology.projectile;
 
-import org.terasology.entitySystem.event.AbstractConsumableEvent;
+import org.terasology.entitySystem.Component;
+import org.terasology.math.geom.Vector3f;
 
-public class DeactivateProjectileEvent extends AbstractConsumableEvent {
+/**
+ * Component attached to projectiles which are in state of motion ,i.e have been fired.
+ */
+public class ProjectileMotionComponent implements Component{
+
+    /**
+     * The current velocity of projectile.
+     */
+    public Vector3f currentVelocity = null;
+
+    /**
+     * The direction of the projectile.
+     */
+    public Vector3f direction = null;
+
+    /**
+     * The distance travelled by the projectile.
+     */
+    public float distanceTravelled = 0;
+
 }

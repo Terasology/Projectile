@@ -25,9 +25,6 @@ import org.terasology.logic.health.HealthComponent;
 import org.terasology.projectile.HitTargetEvent;
 import org.terasology.projectile.ProjectileActionComponent;
 
-/**
- * Created by nikhil on 1/4/17.
- */
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class FireballCollisionHandler extends BaseComponentSystem {
     @ReceiveEvent(components = {FireballComponent.class})

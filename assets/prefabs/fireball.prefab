@@ -19,6 +19,7 @@
     "Light": {},
     "Fireball": {},
     "ProjectileAction": {
-        "iconScale": 0.4
+        "iconScale": 0.4,
+        "initialVelocity": 0.5
     }
 }

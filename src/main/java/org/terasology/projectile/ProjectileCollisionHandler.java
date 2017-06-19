@@ -22,12 +22,7 @@ import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.logic.health.DoDamageEvent;
-import org.terasology.logic.inventory.events.DropItemEvent;
-import org.terasology.logic.location.LocationComponent;
 
-/**
- * Created by nikhil on 1/4/17.
- */
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class ProjectileCollisionHandler extends BaseComponentSystem {
     // Set handler to low priority as it contains override-able default behaviour
