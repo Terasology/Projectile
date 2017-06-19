@@ -71,10 +71,16 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
 
     @ReceiveEvent
     public void onActivate(ActivateEvent event, EntityRef entity, ProjectileActionComponent projectileActionComponent) {
-
         if (time.getGameTime() > lastTime + 1.0f / projectileActionComponent.projectilesPerSecond) {
             int slot = InventoryUtils.getSlotWithItem(event.getInstigator(), entity);
             entity = inventoryManager.removeItem(event.getInstigator(), event.getInstigator(), slot, false, 1);
+            lastTime = time.getGameTime();
+            entity.send(new FireProjectileEvent(event.getOrigin(), event.getDirection()));
+        }
+    }
+
+    @ReceiveEvent
+    public void onFire(FireProjectileEvent event, EntityRef entity, ProjectileActionComponent projectileActionComponent) {
             projectileActionComponent = entity.getComponent(ProjectileActionComponent.class);
             ProjectileMotionComponent projectileMotionComponent = new ProjectileMotionComponent();
             projectileMotionComponent.direction = new Vector3f(event.getDirection());
@@ -85,8 +91,6 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
             location.setWorldRotation(getRotationQuaternion(projectileActionComponent.initialOrientation, new Vector3f(event.getDirection())));
             entity.addOrSaveComponent(location);
             entity.addComponent(projectileMotionComponent);
-            lastTime = time.getGameTime();
-        }
     }
 
     /**

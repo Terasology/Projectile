@@ -20,7 +20,6 @@ import org.terasology.entitySystem.event.AbstractConsumableEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.math.geom.Vector3f;
 
-// TODO: This should not be consumable. Instead have a consumable BeforeActivate event to allow cancellation
 public class HitTargetEvent extends AbstractConsumableEvent {
     private EntityRef instigator;
     private EntityRef target;
