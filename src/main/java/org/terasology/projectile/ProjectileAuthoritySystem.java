@@ -58,7 +58,7 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
     @In
     private Time time;
 
-    private CollisionGroup filter = StandardCollisionGroup.WORLD;
+    private CollisionGroup filter = StandardCollisionGroup.ALL;
     private float lastTime;
 
     @Override
