@@ -29,16 +29,15 @@ import org.terasology.projectile.ProjectileActionComponent;
 public class FireballCollisionHandler extends BaseComponentSystem {
     @ReceiveEvent(components = {FireballComponent.class})
     public void onCollision(HitTargetEvent event, EntityRef entity, ProjectileActionComponent projectile) {
-        int oldFireballHealth = entity.getComponent(HealthComponent.class).currentHealth;
-        // The fireball takes as much damage as it can inflict to the collision target
-        // Maximum damage a fireball can inflict is its health
-        entity.send(new DoDamageEvent(projectile.damageAmount, projectile.damageType));
-        int newFireballHealth = 0;
-        if(entity.exists())
-            newFireballHealth = entity.getComponent(HealthComponent.class).currentHealth;
-        EntityRef blockEntity = event.getTarget();
-        // Inflict as much damage to the target as taken by fireball
-        blockEntity.send(new DoDamageEvent(oldFireballHealth - newFireballHealth, projectile.damageType));
+        EntityRef targetEntity = event.getTarget();
+        HealthComponent health = entity.getComponent(HealthComponent.class);
+        int oldTargetHealth = targetEntity.getComponent(HealthComponent.class).currentHealth;
+        targetEntity.send(new DoDamageEvent(health.currentHealth, projectile.damageType));
+        int newTargetHealth = 0;
+        if(targetEntity.exists())
+            newTargetHealth = targetEntity.getComponent(HealthComponent.class).currentHealth;
+        // inflict same amount of damage on fireball as on the target
+        entity.send(new DoDamageEvent(oldTargetHealth - newTargetHealth, projectile.damageType));
         event.consume();
     }
 }
