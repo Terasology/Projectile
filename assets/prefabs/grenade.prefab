@@ -1,20 +1,20 @@
 {
-    "name": "Projectile:grenade",
-    "parent": "engine:iconItem",
-    "DisplayName": {
-        "name": "Grenade"
-    },
-    "Item": {
-        "icon": "Projectile:Grenade",
-        "damageType": "Projectile:grenadeDmg",
-        "stackId": "Projectile:grenade",
-        "usage": "IN_DIRECTION",
-        "consumedOnUse":false
-    },
-    "Grenade": {},
-    "ProjectileAction": {
-        "affectedByGravity": true,
-        "maxDistance": -1,
-        "iconScale": 0.2
-    }
+  "name": "Projectile:grenade",
+  "parent": "engine:iconItem",
+  "DisplayName": {
+    "name": "Grenade"
+  },
+  "Item": {
+    "icon": "Projectile:Grenade",
+    "damageType": "Projectile:grenadeDmg",
+    "stackId": "Projectile:grenade",
+    "usage": "IN_DIRECTION",
+    "consumedOnUse": false
+  },
+  "Grenade": {},
+  "ProjectileAction": {
+    "affectedByGravity": true,
+    "maxDistance": -1,
+    "iconScale": 0.2
+  }
 }

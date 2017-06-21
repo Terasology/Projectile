@@ -1,25 +1,26 @@
 {
-    "name": "Projectile:fireball",
-    "parent": "engine:iconItem",
-    "DisplayName": {
-        "name": "Fireball"
-    },
-    "Item": {
-        "icon": "Projectile:Fireball",
-        "stackId": "Projectile:fireball",
-        "damageType": "Projectile:fireballDmg",
-        "usage": "IN_DIRECTION",
-        "consumedOnUse":false
-    },
-    "Health": {
-        "maxHealth": 50,
-        "currentHealth": 50,
-        "destroyEntityOnNoHealth": true
-    },
-    "Light": {},
-    "Fireball": {},
-    "ProjectileAction": {
-        "iconScale": 0.4,
-        "initialVelocity": 0.5
-    }
+  "name": "Projectile:fireball",
+  "parent": "engine:iconItem",
+  "DisplayName": {
+    "name": "Fireball"
+  },
+  "Item": {
+    "icon": "Projectile:Fireball",
+    "stackId": "Projectile:fireball",
+    "damageType": "Projectile:fireballDmg",
+    "usage": "IN_DIRECTION",
+    "consumedOnUse": false
+  },
+  "Health": {
+    "maxHealth": 50,
+    "currentHealth": 50,
+    "regenRate": 0,
+    "destroyEntityOnNoHealth": true
+  },
+  "Light": {},
+  "Fireball": {},
+  "ProjectileAction": {
+    "iconScale": 0.4,
+    "initialVelocity": 0.5
+  }
 }

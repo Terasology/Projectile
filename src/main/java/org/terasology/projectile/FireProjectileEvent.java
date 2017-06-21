@@ -18,23 +18,13 @@ package org.terasology.projectile;
 import org.terasology.entitySystem.event.Event;
 import org.terasology.math.geom.Vector3f;
 
-/**
- * Created by nikhil on 19/6/17.
- */
 public class FireProjectileEvent implements Event {
     private Vector3f origin;
     private Vector3f direction;
-    private int maxDistance = 24;
 
     public FireProjectileEvent(Vector3f origin, Vector3f direction) {
         this.origin = origin;
         this.direction = direction;
-    }
-
-    public FireProjectileEvent(Vector3f origin, Vector3f direction, int maxDistance) {
-        this.origin = origin;
-        this.direction = direction;
-        this.maxDistance = maxDistance;
     }
 
     public Vector3f getOrigin() {
@@ -43,9 +33,5 @@ public class FireProjectileEvent implements Event {
 
     public Vector3f getDirection() {
         return direction;
-    }
-
-    public int getMaxDistance() {
-        return maxDistance;
     }
 }
