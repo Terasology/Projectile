@@ -14,7 +14,7 @@
   "ProjectileAction": {
     "affectedByGravity": true,
     "maxDistance": -1,
-    "initialVelocity": 2,
+    "initialVelocity": 40,
     "reusable": true
   }
 }

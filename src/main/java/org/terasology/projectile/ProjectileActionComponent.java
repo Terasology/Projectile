@@ -52,7 +52,7 @@ public class ProjectileActionComponent implements Component{
     /**
      * The velocity of the projectile.
      */
-    public float initialVelocity = 1;
+    public float initialVelocity = 20;
 
     /**
      * The max distance the projectile will fly.

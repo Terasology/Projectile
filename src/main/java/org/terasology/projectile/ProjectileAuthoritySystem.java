@@ -139,8 +139,9 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
             Vector3f position = location.getWorldPosition();
             projectileMotion.direction = new Vector3f(projectileMotion.currentVelocity).normalize();
             HitResult result;
-            float displacement = projectileMotion.currentVelocity.length();
-            result = physicsRenderer.rayTrace(position, projectileMotion.direction, displacement, filter);
+            float displacement = projectileMotion.currentVelocity.length() * delta;
+            // 0.1 is added so that raytraces are inclusive of the endpoint
+            result = physicsRenderer.rayTrace(position, projectileMotion.direction, displacement + .01f, filter);
 
             if(result.isHit()) {
                 EntityRef targetEntity = result.getEntity();
@@ -166,7 +167,7 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
                 }
             }
 
-            position.add(projectileMotion.currentVelocity);
+            position.add(new Vector3f(projectileMotion.currentVelocity).mul(delta));
             location.setWorldPosition(position);
             location.setWorldRotation(getRotationQuaternion(projectile.initialOrientation, projectileMotion.currentVelocity));
             projectileMotion.distanceTravelled += displacement;
