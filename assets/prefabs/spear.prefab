@@ -1,20 +1,20 @@
 {
-    "name": "Projectile:spear",
-    "parent": "engine:iconItem",
-    "DisplayName": {
-        "name": "Spear"
-    },
-    "Item": {
-        "icon": "Projectile:Spear",
-        "damageType": "Projectile:spearDmg",
-        "stackId": "Projectile:spear",
-        "usage": "IN_DIRECTION",
-        "consumedOnUse": false
-    },
-    "ProjectileAction": {
-        "affectedByGravity": true,
-        "maxDistance": -1,
-        "initialVelocity": 2,
-        "reusable": true
-    }
+  "name": "Projectile:spear",
+  "parent": "engine:iconItem",
+  "DisplayName": {
+    "name": "Spear"
+  },
+  "Item": {
+    "icon": "Projectile:Spear",
+    "damageType": "Projectile:spearDmg",
+    "stackId": "Projectile:spear",
+    "usage": "IN_DIRECTION",
+    "consumedOnUse": false
+  },
+  "ProjectileAction": {
+    "affectedByGravity": true,
+    "maxDistance": -1,
+    "initialVelocity": 2,
+    "reusable": true
+  }
 }

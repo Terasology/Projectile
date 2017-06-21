@@ -81,11 +81,9 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
 
     @ReceiveEvent
     public void onFire(FireProjectileEvent event, EntityRef entity, ProjectileActionComponent projectileActionComponent) {
-            projectileActionComponent = entity.getComponent(ProjectileActionComponent.class);
             ProjectileMotionComponent projectileMotionComponent = new ProjectileMotionComponent();
             projectileMotionComponent.direction = new Vector3f(event.getDirection());
             projectileMotionComponent.currentVelocity = new Vector3f(event.getDirection()).mul(projectileActionComponent.initialVelocity);
-            projectileActionComponent.maxDistance = event.getMaxDistance();
             Vector3f pos = event.getOrigin();
             LocationComponent location = new LocationComponent(pos);
             location.setWorldScale(projectileActionComponent.iconScale);
