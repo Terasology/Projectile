@@ -22,6 +22,7 @@ import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.logic.health.DoDamageEvent;
 import org.terasology.logic.health.HealthComponent;
+import org.terasology.particles.components.ParticleEmitterComponent;
 import org.terasology.projectile.HitTargetEvent;
 import org.terasology.projectile.ProjectileActionComponent;
 
@@ -38,6 +39,13 @@ public class FireballCollisionHandler extends BaseComponentSystem {
             newTargetHealth = targetEntity.getComponent(HealthComponent.class).currentHealth;
         // inflict same amount of damage on fireball as on the target
         entity.send(new DoDamageEvent(oldTargetHealth - newTargetHealth, projectile.damageType));
+
+        if(entity.exists()) {
+            ParticleEmitterComponent particleEmitter = entity.getComponent(ParticleEmitterComponent.class);
+            particleEmitter.maxParticles -= (oldTargetHealth - newTargetHealth)/health.maxHealth
+                    * particleEmitter.spawnRateMax;
+        }
+
         event.consume();
     }
 }

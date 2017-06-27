@@ -180,6 +180,8 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
 
             entity.addOrSaveComponent(location);
             entity.addOrSaveComponent(projectile);
+
+            entity.send(new ProjectileUpdateEvent());
         }
 
     }
