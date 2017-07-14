@@ -30,7 +30,7 @@ public class HitTargetEvent extends AbstractConsumableEvent {
     private int activationId;
 
     public HitTargetEvent(EntityRef target, EntityRef instigator, Vector3f origin, Vector3f direction,
-                         Vector3f hitPosition, Vector3f hitNormal) {
+                          Vector3f hitPosition, Vector3f hitNormal) {
         this.instigator = instigator;
         this.target = target;
         this.direction = direction;
