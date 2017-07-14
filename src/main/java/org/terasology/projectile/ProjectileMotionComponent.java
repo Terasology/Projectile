@@ -21,7 +21,7 @@ import org.terasology.math.geom.Vector3f;
 /**
  * Component attached to projectiles which are in state of motion ,i.e have been fired.
  */
-public class ProjectileMotionComponent implements Component{
+public class ProjectileMotionComponent implements Component {
 
     /**
      * The current velocity of projectile.

@@ -52,7 +52,7 @@ public class FireballParticleHandlerSystem extends BaseComponentSystem {
 
         AttractorAffectorComponent attractorAffector = new AttractorAffectorComponent();
         attractorAffector.origin = entity.getComponent(LocationComponent.class);
-        attractorAffector.attractors.put(new Vector3f(0, 0,0), -.1f);
+        attractorAffector.attractors.put(new Vector3f(0, 0, 0), -.1f);
         attractorAffector.attractors.put(new Vector3f(negDirection).scale(.1f), -.3f);
 
         entity.addComponent(attractorAffector);
@@ -62,7 +62,6 @@ public class FireballParticleHandlerSystem extends BaseComponentSystem {
         entity.send(new ParticleSystemUpdateEvent());
         entity.removeComponent(MeshComponent.class);
     }
-
 
 
 }

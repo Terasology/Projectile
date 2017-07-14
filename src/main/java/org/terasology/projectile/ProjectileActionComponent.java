@@ -20,7 +20,7 @@ import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.logic.health.EngineDamageTypes;
 import org.terasology.math.geom.Vector3f;
 
-public class ProjectileActionComponent implements Component{
+public class ProjectileActionComponent implements Component {
     /**
      * scaling the projectile icon
      */
