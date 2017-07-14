@@ -128,10 +128,11 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
             ProjectileMotionComponent projectileMotion = entity.getComponent(ProjectileMotionComponent.class);
 
             if (projectileMotion.distanceTravelled >= projectile.maxDistance && projectile.maxDistance != -1) {
-                if (projectile.reusable)
+                if (projectile.reusable) {
                     entity.send(new DeactivateProjectileEvent());
-                else
+                } else {
                     entity.destroy();
+                }
                 continue;
             }
 
