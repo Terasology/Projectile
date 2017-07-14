@@ -42,10 +42,9 @@ import org.terasology.registry.In;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class ProjectileAuthoritySystem extends BaseComponentSystem implements UpdateSubscriberSystem {
+    private static final Logger logger = LoggerFactory.getLogger(ProjectileAuthoritySystem.class);
     final int TERMINAL_VELOCITY = 40;
     final float G = 1f;
-    private static final Logger logger = LoggerFactory.getLogger(ProjectileAuthoritySystem.class);
-
     @In
     private InventoryManager inventoryManager;
 
@@ -81,22 +80,22 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
 
     @ReceiveEvent
     public void onFire(FireProjectileEvent event, EntityRef entity, ProjectileActionComponent projectileActionComponent) {
-            ProjectileMotionComponent projectileMotionComponent = new ProjectileMotionComponent();
-            projectileMotionComponent.direction = new Vector3f(event.getDirection());
-            projectileMotionComponent.currentVelocity = new Vector3f(event.getDirection()).mul(projectileActionComponent.initialVelocity);
-            Vector3f pos = event.getOrigin();
-            LocationComponent location = new LocationComponent(pos);
-            location.setWorldScale(projectileActionComponent.iconScale);
-            location.setWorldRotation(getRotationQuaternion(projectileActionComponent.initialOrientation, new Vector3f(event.getDirection())));
-            entity.addOrSaveComponent(location);
-            entity.addComponent(projectileMotionComponent);
-            entity.saveComponent(projectileActionComponent);
+        ProjectileMotionComponent projectileMotionComponent = new ProjectileMotionComponent();
+        projectileMotionComponent.direction = new Vector3f(event.getDirection());
+        projectileMotionComponent.currentVelocity = new Vector3f(event.getDirection()).mul(projectileActionComponent.initialVelocity);
+        Vector3f pos = event.getOrigin();
+        LocationComponent location = new LocationComponent(pos);
+        location.setWorldScale(projectileActionComponent.iconScale);
+        location.setWorldRotation(getRotationQuaternion(projectileActionComponent.initialOrientation, new Vector3f(event.getDirection())));
+        entity.addOrSaveComponent(location);
+        entity.addComponent(projectileMotionComponent);
+        entity.saveComponent(projectileActionComponent);
     }
 
     /**
      * Rotates the projectile in the direction of motion
      */
-    private Quat4f getRotationQuaternion(Vector3f initialDir, Vector3f finalDir){
+    private Quat4f getRotationQuaternion(Vector3f initialDir, Vector3f finalDir) {
         // rotates the entity to face in the direction of pointer
         Quat4f rotation = new Quat4f();
         Vector3f crossProduct = new Vector3f();
@@ -104,7 +103,7 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
         rotation.x = crossProduct.x;
         rotation.y = crossProduct.y;
         rotation.z = crossProduct.z;
-        rotation.w = (float) (Math.sqrt((initialDir.lengthSquared())*(finalDir.lengthSquared())) +
+        rotation.w = (float) (Math.sqrt((initialDir.lengthSquared()) * (finalDir.lengthSquared())) +
                 initialDir.dot(finalDir));
         rotation.normalize();
         return rotation;
@@ -114,10 +113,11 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
      * Deactivates the projectile and drops it as an item
      */
     @ReceiveEvent
-    public void onDeactivate(DeactivateProjectileEvent event, EntityRef entity, ProjectileMotionComponent projectileMotion){
+    public void onDeactivate(DeactivateProjectileEvent event, EntityRef entity, ProjectileMotionComponent projectileMotion) {
         entity.removeComponent(ProjectileMotionComponent.class);
         entity.send(new DropItemEvent(entity.getComponent(LocationComponent.class).getWorldPosition()));
     }
+
     /**
      * Updates the state of fired projectiles
      */
@@ -127,8 +127,8 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
             ProjectileActionComponent projectile = entity.getComponent(ProjectileActionComponent.class);
             ProjectileMotionComponent projectileMotion = entity.getComponent(ProjectileMotionComponent.class);
 
-            if(projectileMotion.distanceTravelled >= projectile.maxDistance && projectile.maxDistance != -1) {
-                if(projectile.reusable)
+            if (projectileMotion.distanceTravelled >= projectile.maxDistance && projectile.maxDistance != -1) {
+                if (projectile.reusable)
                     entity.send(new DeactivateProjectileEvent());
                 else
                     entity.destroy();
@@ -139,19 +139,20 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
             Vector3f position = location.getWorldPosition();
             projectileMotion.direction = new Vector3f(projectileMotion.currentVelocity).normalize();
             HitResult result;
-            float displacement = projectileMotion.currentVelocity.length() * delta;
+            float displacement = Math.min(projectileMotion.currentVelocity.length() * delta,
+                    projectile.maxDistance - projectileMotion.distanceTravelled);
             // 0.1 is added so that raytraces are inclusive of the endpoint
             result = physicsRenderer.rayTrace(position, projectileMotion.direction, displacement + .01f, filter);
 
-            if(result.isHit()) {
+            if (result.isHit()) {
                 EntityRef targetEntity = result.getEntity();
-                if(!targetEntity.hasComponent(HealthComponent.class)){
+                if (!targetEntity.hasComponent(HealthComponent.class)) {
                     // a hack to induce a HealthComponent in the blockEntity
                     targetEntity.send(new DoDamageEvent(0, projectile.damageType));
-                    if(!targetEntity.hasComponent(HealthComponent.class)) {
+                    if (!targetEntity.hasComponent(HealthComponent.class)) {
                         // if it still doesn't have a health component, it's indestructible
                         // so destroy our projectile
-                        if(projectile.reusable)
+                        if (projectile.reusable)
                             entity.send(new DeactivateProjectileEvent());
                         else
                             entity.destroy();
@@ -162,7 +163,7 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
                 entity.saveComponent(location);
                 entity.send(new HitTargetEvent(targetEntity, entity, new Vector3f(),
                         projectileMotion.direction, result.getHitPoint(), result.getHitNormal()));
-                if(!entity.exists() || !entity.hasComponent(ProjectileMotionComponent.class)) {
+                if (!entity.exists() || !entity.hasComponent(ProjectileMotionComponent.class)) {
                     continue;
                 }
             }
@@ -172,7 +173,7 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
             location.setWorldRotation(getRotationQuaternion(projectile.initialOrientation, projectileMotion.currentVelocity));
             projectileMotion.distanceTravelled += displacement;
 
-            if(projectile.affectedByGravity && Math.abs(projectileMotion.currentVelocity.getY()) < TERMINAL_VELOCITY) {
+            if (projectile.affectedByGravity && Math.abs(projectileMotion.currentVelocity.getY()) < TERMINAL_VELOCITY) {
                 float update = G * delta;
                 projectileMotion.currentVelocity.subY(update);
             }
