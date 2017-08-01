@@ -1,6 +1,6 @@
 {
     "id": "Projectile",
-    "version": "1.0.1",
+    "version": "1.0.2-SNAPSHOT",
     "author": "niksoc",
     "displayName": "Projectile",
     "description": "Base module for projectiles",
