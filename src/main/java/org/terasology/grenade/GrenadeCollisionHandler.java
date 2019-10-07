@@ -70,11 +70,11 @@ public class GrenadeCollisionHandler extends BaseComponentSystem {
 
     @Override
     public void initialise() {
-        explosionSounds.add(Assets.getSound("core:explode1"));
-        explosionSounds.add(Assets.getSound("core:explode2"));
-        explosionSounds.add(Assets.getSound("core:explode3"));
-        explosionSounds.add(Assets.getSound("core:explode4"));
-        explosionSounds.add(Assets.getSound("core:explode5"));
+        explosionSounds.add(Assets.getSound("CoreAssets:explode1"));
+        explosionSounds.add(Assets.getSound("CoreAssets:explode2"));
+        explosionSounds.add(Assets.getSound("CoreAssets:explode3"));
+        explosionSounds.add(Assets.getSound("CoreAssets:explode4"));
+        explosionSounds.add(Assets.getSound("CoreAssets:explode5"));
     }
 
     @ReceiveEvent(components = {GrenadeComponent.class})
@@ -91,7 +91,7 @@ public class GrenadeCollisionHandler extends BaseComponentSystem {
     }
 
     void doExplosion(ExplosionActionComponent explosionComp, Vector3f origin, EntityRef instigatingBlockEntity) {
-        EntityBuilder builder = entityManager.newBuilder("core:smokeExplosion");
+        EntityBuilder builder = entityManager.newBuilder("CoreAssets:smokeExplosion");
         builder.getComponent(LocationComponent.class).setWorldPosition(origin);
         EntityRef smokeEntity = builder.build();
 
