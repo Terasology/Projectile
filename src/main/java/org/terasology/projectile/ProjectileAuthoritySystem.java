@@ -32,6 +32,7 @@ import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.inventory.InventoryUtils;
 import org.terasology.logic.inventory.events.DropItemEvent;
 import org.terasology.logic.location.LocationComponent;
+import org.terasology.math.JomlUtil;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.physics.CollisionGroup;
@@ -143,7 +144,7 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
             float displacement = Math.min(projectileMotion.currentVelocity.length() * delta,
                     projectile.maxDistance - projectileMotion.distanceTravelled);
             // 0.1 is added so that raytraces are inclusive of the endpoint
-            result = physicsRenderer.rayTrace(position, projectileMotion.direction, displacement + .01f, filter);
+            result = physicsRenderer.rayTrace(JomlUtil.from(position), JomlUtil.from(projectileMotion.direction), displacement + .01f, filter);
 
             if (result.isHit()) {
                 EntityRef targetEntity = result.getEntity();
@@ -160,10 +161,10 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
                         continue;
                     }
                 }
-                location.setWorldPosition(result.getHitPoint());
+                location.setWorldPosition(JomlUtil.from(result.getHitPoint()));
                 entity.saveComponent(location);
                 entity.send(new HitTargetEvent(targetEntity, entity, new Vector3f(),
-                        projectileMotion.direction, result.getHitPoint(), result.getHitNormal()));
+                        projectileMotion.direction, JomlUtil.from(result.getHitPoint()), JomlUtil.from(result.getHitNormal())));
                 if (!entity.exists() || !entity.hasComponent(ProjectileMotionComponent.class)) {
                     continue;
                 }
