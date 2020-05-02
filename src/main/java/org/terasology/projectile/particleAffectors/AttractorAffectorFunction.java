@@ -15,6 +15,7 @@
  */
 package org.terasology.projectile.particleAffectors;
 
+import org.terasology.math.JomlUtil;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.particles.ParticleData;
 import org.terasology.particles.ParticleDataMask;
@@ -40,7 +41,7 @@ public class AttractorAffectorFunction extends AffectorFunction<AttractorAffecto
             return;
         }
 
-        Vector3f particlePos = new Vector3f(particleData.position);
+        Vector3f particlePos = JomlUtil.from(particleData.position);
         for (Map.Entry<Vector3f, Float> attractor : component.attractors.entrySet()) {
             final Vector3f attractorOffset = attractor.getKey();
             float strength = attractor.getValue();
@@ -66,7 +67,7 @@ public class AttractorAffectorFunction extends AffectorFunction<AttractorAffecto
 
             acceleration.mul(strength);
             particleData.velocity.add(
-                    acceleration.mul(delta)
+                    JomlUtil.from(acceleration.mul(delta))
             );
         }
     }
