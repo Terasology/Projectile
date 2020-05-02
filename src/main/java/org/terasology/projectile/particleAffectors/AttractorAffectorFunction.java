@@ -27,8 +27,7 @@ public class AttractorAffectorFunction extends AffectorFunction<AttractorAffecto
     static final float EPS = 1e-2f;
 
     public AttractorAffectorFunction() {
-        super(AttractorAffectorComponent.class, ParticleDataMask.VELOCITY,
-                ParticleDataMask.ENERGY);
+        super(ParticleDataMask.VELOCITY, ParticleDataMask.ENERGY);
     }
 
     @Override
@@ -37,7 +36,9 @@ public class AttractorAffectorFunction extends AffectorFunction<AttractorAffecto
                        final Random random,
                        final float delta
     ) {
-        if (component.origin == null) return;
+        if (component.origin == null) {
+            return;
+        }
 
         Vector3f particlePos = new Vector3f(particleData.position);
         for (Map.Entry<Vector3f, Float> attractor : component.attractors.entrySet()) {

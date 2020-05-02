@@ -26,6 +26,7 @@ import org.terasology.math.geom.Vector3f;
 import org.terasology.particles.ParticleSystemManager;
 import org.terasology.particles.components.ParticleEmitterComponent;
 import org.terasology.particles.events.ParticleSystemUpdateEvent;
+import org.terasology.particles.functions.RegisterParticleSystemFunction;
 import org.terasology.projectile.FireProjectileEvent;
 import org.terasology.projectile.ProjectileActionComponent;
 import org.terasology.projectile.particleAffectors.AttractorAffectorComponent;
@@ -34,18 +35,15 @@ import org.terasology.registry.In;
 import org.terasology.rendering.logic.MeshComponent;
 
 @RegisterSystem(RegisterMode.CLIENT)
+@RegisterParticleSystemFunction()
 public class FireballParticleHandlerSystem extends BaseComponentSystem {
 
     @In
     ParticleSystemManager particleSystemManager;
 
-    @Override
-    public void initialise() {
-        particleSystemManager.registerAffectorFunction(new AttractorAffectorFunction());
-    }
 
     @ReceiveEvent(priority = EventPriority.PRIORITY_LOW, components = {FireballComponent.class})
-    public void OnFire(FireProjectileEvent event, EntityRef entity, ProjectileActionComponent projectileActionComponent) {
+    public void onFire(FireProjectileEvent event, EntityRef entity, ProjectileActionComponent projectileActionComponent) {
         ParticleEmitterComponent particleEmitterComponent = entity.getComponent(ParticleEmitterComponent.class);
         particleEmitterComponent.enabled = true;
         Vector3f negDirection = new Vector3f(event.getDirection()).normalize().negate();
