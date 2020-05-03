@@ -5,6 +5,7 @@
     "displayName": "Projectile",
     "description": "Base module for projectiles",
     "dependencies": [
+        {"id" : "Health", "minVersion" : "0.1.0"}
      ],
     "serverSideOnly": false,
     "isLibrary": true
