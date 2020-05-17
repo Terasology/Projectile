@@ -1,11 +1,15 @@
 {
     "id": "Projectile",
-    "version": "1.0.3-SNAPSHOT",
+    "version": "1.1.0",
     "author": "niksoc",
     "displayName": "Projectile",
     "description": "Base module for projectiles",
     "dependencies": [
-        {"id" : "Core", "minVersion" : "3.0.0"}
-     ],
-    "serverSideOnly": false
+        { "id": "CoreAssets", "minVersion": "2.0.1" },
+        { "id": "Explosives", "minVersion": "1.0.0" },
+        { "id": "Health", "minVersion": "1.0.0" },
+        { "id": "Inventory", "minVersion": "1.1.0" }
+    ],
+    "serverSideOnly": false,
+    "isLibrary": true
 }
