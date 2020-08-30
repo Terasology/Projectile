@@ -32,6 +32,7 @@ import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.inventory.InventoryUtils;
 import org.terasology.logic.inventory.events.DropItemEvent;
 import org.terasology.logic.location.LocationComponent;
+import org.terasology.math.JomlUtil;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.physics.CollisionGroup;
@@ -43,8 +44,8 @@ import org.terasology.registry.In;
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class ProjectileAuthoritySystem extends BaseComponentSystem implements UpdateSubscriberSystem {
     private static final Logger logger = LoggerFactory.getLogger(ProjectileAuthoritySystem.class);
-    final int TERMINAL_VELOCITY = 40;
-    final float G = 1f;
+    public static final int TERMINAL_VELOCITY = 40;
+    public static final float G = 1f;
     @In
     private InventoryManager inventoryManager;
 
@@ -72,9 +73,10 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
     public void onActivate(ActivateEvent event, EntityRef entity, ProjectileActionComponent projectileActionComponent) {
         if (time.getGameTime() > lastTime + 1.0f / projectileActionComponent.projectilesPerSecond) {
             int slot = InventoryUtils.getSlotWithItem(event.getInstigator(), entity);
-            entity = inventoryManager.removeItem(event.getInstigator(), event.getInstigator(), slot, false, 1);
+            EntityRef inventoryEntity = inventoryManager.removeItem(event.getInstigator(), event.getInstigator(),
+                slot, false, 1);
             lastTime = time.getGameTime();
-            entity.send(new FireProjectileEvent(event.getOrigin(), event.getDirection()));
+            inventoryEntity.send(new FireProjectileEvent(event.getOrigin(), event.getDirection()));
         }
     }
 
@@ -143,7 +145,7 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
             float displacement = Math.min(projectileMotion.currentVelocity.length() * delta,
                     projectile.maxDistance - projectileMotion.distanceTravelled);
             // 0.1 is added so that raytraces are inclusive of the endpoint
-            result = physicsRenderer.rayTrace(position, projectileMotion.direction, displacement + .01f, filter);
+            result = physicsRenderer.rayTrace(JomlUtil.from(position), JomlUtil.from(projectileMotion.direction), displacement + .01f, filter);
 
             if (result.isHit()) {
                 EntityRef targetEntity = result.getEntity();
@@ -153,17 +155,18 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
                     if (!targetEntity.hasComponent(HealthComponent.class)) {
                         // if it still doesn't have a health component, it's indestructible
                         // so destroy our projectile
-                        if (projectile.reusable)
+                        if (projectile.reusable) {
                             entity.send(new DeactivateProjectileEvent());
-                        else
+                        } else {
                             entity.destroy();
+                        }
                         continue;
                     }
                 }
-                location.setWorldPosition(result.getHitPoint());
+                location.setWorldPosition(JomlUtil.from(result.getHitPoint()));
                 entity.saveComponent(location);
                 entity.send(new HitTargetEvent(targetEntity, entity, new Vector3f(),
-                        projectileMotion.direction, result.getHitPoint(), result.getHitNormal()));
+                        projectileMotion.direction, JomlUtil.from(result.getHitPoint()), JomlUtil.from(result.getHitNormal())));
                 if (!entity.exists() || !entity.hasComponent(ProjectileMotionComponent.class)) {
                     continue;
                 }
