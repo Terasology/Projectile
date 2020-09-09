@@ -1,38 +1,24 @@
-/*
- * Copyright 2017 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.fireball;
 
-import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.entitySystem.event.EventPriority;
-import org.terasology.entitySystem.event.ReceiveEvent;
-import org.terasology.entitySystem.systems.BaseComponentSystem;
-import org.terasology.entitySystem.systems.RegisterMode;
-import org.terasology.entitySystem.systems.RegisterSystem;
-import org.terasology.logic.location.LocationComponent;
+import org.terasology.engine.entitySystem.entity.EntityRef;
+import org.terasology.engine.entitySystem.event.EventPriority;
+import org.terasology.engine.entitySystem.event.ReceiveEvent;
+import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
+import org.terasology.engine.entitySystem.systems.RegisterMode;
+import org.terasology.engine.entitySystem.systems.RegisterSystem;
+import org.terasology.engine.logic.location.LocationComponent;
+import org.terasology.engine.particles.ParticleSystemManager;
+import org.terasology.engine.particles.components.ParticleEmitterComponent;
+import org.terasology.engine.particles.events.ParticleSystemUpdateEvent;
+import org.terasology.engine.particles.functions.RegisterParticleSystemFunction;
+import org.terasology.engine.registry.In;
+import org.terasology.engine.rendering.logic.MeshComponent;
 import org.terasology.math.geom.Vector3f;
-import org.terasology.particles.ParticleSystemManager;
-import org.terasology.particles.components.ParticleEmitterComponent;
-import org.terasology.particles.events.ParticleSystemUpdateEvent;
-import org.terasology.particles.functions.RegisterParticleSystemFunction;
 import org.terasology.projectile.FireProjectileEvent;
 import org.terasology.projectile.ProjectileActionComponent;
 import org.terasology.projectile.particleAffectors.AttractorAffectorComponent;
-import org.terasology.projectile.particleAffectors.AttractorAffectorFunction;
-import org.terasology.registry.In;
-import org.terasology.rendering.logic.MeshComponent;
 
 @RegisterSystem(RegisterMode.CLIENT)
 @RegisterParticleSystemFunction()
@@ -43,7 +29,8 @@ public class FireballParticleHandlerSystem extends BaseComponentSystem {
 
 
     @ReceiveEvent(priority = EventPriority.PRIORITY_LOW, components = {FireballComponent.class})
-    public void onFire(FireProjectileEvent event, EntityRef entity, ProjectileActionComponent projectileActionComponent) {
+    public void onFire(FireProjectileEvent event, EntityRef entity,
+                       ProjectileActionComponent projectileActionComponent) {
         ParticleEmitterComponent particleEmitterComponent = entity.getComponent(ParticleEmitterComponent.class);
         particleEmitterComponent.enabled = true;
         Vector3f negDirection = new Vector3f(event.getDirection()).normalize().negate();

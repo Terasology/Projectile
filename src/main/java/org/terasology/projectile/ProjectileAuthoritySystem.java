@@ -1,63 +1,47 @@
-/*
- * Copyright 2017 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.projectile;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.engine.Time;
-import org.terasology.entitySystem.entity.EntityManager;
-import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.entitySystem.event.ReceiveEvent;
-import org.terasology.entitySystem.systems.BaseComponentSystem;
-import org.terasology.entitySystem.systems.RegisterMode;
-import org.terasology.entitySystem.systems.RegisterSystem;
-import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
-import org.terasology.logic.common.ActivateEvent;
-import org.terasology.logic.health.event.DoDamageEvent;
-import org.terasology.logic.health.HealthComponent;
-import org.terasology.logic.inventory.InventoryManager;
-import org.terasology.logic.inventory.InventoryUtils;
-import org.terasology.logic.inventory.events.DropItemEvent;
-import org.terasology.logic.location.LocationComponent;
+import org.terasology.engine.core.Time;
+import org.terasology.engine.entitySystem.entity.EntityManager;
+import org.terasology.engine.entitySystem.entity.EntityRef;
+import org.terasology.engine.entitySystem.event.ReceiveEvent;
+import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
+import org.terasology.engine.entitySystem.systems.RegisterMode;
+import org.terasology.engine.entitySystem.systems.RegisterSystem;
+import org.terasology.engine.entitySystem.systems.UpdateSubscriberSystem;
+import org.terasology.engine.logic.common.ActivateEvent;
+import org.terasology.engine.logic.inventory.events.DropItemEvent;
+import org.terasology.engine.logic.location.LocationComponent;
+import org.terasology.engine.physics.CollisionGroup;
+import org.terasology.engine.physics.HitResult;
+import org.terasology.engine.physics.Physics;
+import org.terasology.engine.physics.StandardCollisionGroup;
+import org.terasology.engine.registry.In;
+import org.terasology.health.logic.HealthComponent;
+import org.terasology.health.logic.event.DoDamageEvent;
+import org.terasology.inventory.logic.InventoryManager;
+import org.terasology.inventory.logic.InventoryUtils;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
-import org.terasology.physics.CollisionGroup;
-import org.terasology.physics.HitResult;
-import org.terasology.physics.Physics;
-import org.terasology.physics.StandardCollisionGroup;
-import org.terasology.registry.In;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class ProjectileAuthoritySystem extends BaseComponentSystem implements UpdateSubscriberSystem {
     private static final Logger logger = LoggerFactory.getLogger(ProjectileAuthoritySystem.class);
     final int TERMINAL_VELOCITY = 40;
     final float G = 1f;
+    private final CollisionGroup[] filter = {StandardCollisionGroup.DEFAULT, StandardCollisionGroup.WORLD,
+            StandardCollisionGroup.CHARACTER};
     @In
     private InventoryManager inventoryManager;
-
     @In
     private Physics physicsRenderer;
-
     @In
     private EntityManager entityManager;
-
     @In
     private Time time;
-
-    private CollisionGroup[] filter = {StandardCollisionGroup.DEFAULT, StandardCollisionGroup.WORLD, StandardCollisionGroup.CHARACTER};
     private float lastTime;
 
     @Override
@@ -79,14 +63,17 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
     }
 
     @ReceiveEvent
-    public void onFire(FireProjectileEvent event, EntityRef entity, ProjectileActionComponent projectileActionComponent) {
+    public void onFire(FireProjectileEvent event, EntityRef entity,
+                       ProjectileActionComponent projectileActionComponent) {
         ProjectileMotionComponent projectileMotionComponent = new ProjectileMotionComponent();
         projectileMotionComponent.direction = new Vector3f(event.getDirection());
-        projectileMotionComponent.currentVelocity = new Vector3f(event.getDirection()).mul(projectileActionComponent.initialVelocity);
+        projectileMotionComponent.currentVelocity =
+                new Vector3f(event.getDirection()).mul(projectileActionComponent.initialVelocity);
         Vector3f pos = event.getOrigin();
         LocationComponent location = new LocationComponent(pos);
         location.setWorldScale(projectileActionComponent.iconScale);
-        location.setWorldRotation(getRotationQuaternion(projectileActionComponent.initialOrientation, new Vector3f(event.getDirection())));
+        location.setWorldRotation(getRotationQuaternion(projectileActionComponent.initialOrientation,
+                new Vector3f(event.getDirection())));
         entity.addOrSaveComponent(location);
         entity.addComponent(projectileMotionComponent);
         entity.saveComponent(projectileActionComponent);
@@ -113,7 +100,8 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
      * Deactivates the projectile and drops it as an item
      */
     @ReceiveEvent
-    public void onDeactivate(DeactivateProjectileEvent event, EntityRef entity, ProjectileMotionComponent projectileMotion) {
+    public void onDeactivate(DeactivateProjectileEvent event, EntityRef entity,
+                             ProjectileMotionComponent projectileMotion) {
         entity.removeComponent(ProjectileMotionComponent.class);
         entity.send(new DropItemEvent(entity.getComponent(LocationComponent.class).getWorldPosition()));
     }
@@ -171,7 +159,8 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
 
             position.add(new Vector3f(projectileMotion.currentVelocity).mul(delta));
             location.setWorldPosition(position);
-            location.setWorldRotation(getRotationQuaternion(projectile.initialOrientation, projectileMotion.currentVelocity));
+            location.setWorldRotation(getRotationQuaternion(projectile.initialOrientation,
+                    projectileMotion.currentVelocity));
             projectileMotion.distanceTravelled += displacement;
 
             if (projectile.affectedByGravity && Math.abs(projectileMotion.currentVelocity.getY()) < TERMINAL_VELOCITY) {
