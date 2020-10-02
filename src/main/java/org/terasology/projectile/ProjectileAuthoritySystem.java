@@ -76,7 +76,7 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
             EntityRef inventoryEntity = inventoryManager.removeItem(event.getInstigator(), event.getInstigator(),
                 slot, false, 1);
             lastTime = time.getGameTime();
-            inventoryEntity.send(new FireProjectileEvent(event.getOrigin(), event.getDirection()));
+            inventoryEntity.send(new FireProjectileEvent(JomlUtil.from(event.getOrigin()), JomlUtil.from(event.getDirection())));
         }
     }
 
