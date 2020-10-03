@@ -15,9 +15,9 @@
  */
 package org.terasology.projectile.particleAffectors;
 
+import org.joml.Vector3f;
 import org.terasology.entitySystem.Component;
 import org.terasology.logic.location.LocationComponent;
-import org.terasology.math.geom.Vector3f;
 import org.terasology.network.Replicate;
 
 import java.util.HashMap;

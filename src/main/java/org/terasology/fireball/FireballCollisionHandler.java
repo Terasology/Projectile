@@ -35,8 +35,9 @@ public class FireballCollisionHandler extends BaseComponentSystem {
         int oldTargetHealth = targetEntity.getComponent(HealthComponent.class).currentHealth;
         targetEntity.send(new DoDamageEvent(health.currentHealth, projectile.damageType));
         int newTargetHealth = 0;
-        if (targetEntity.exists())
+        if (targetEntity.exists()) {
             newTargetHealth = targetEntity.getComponent(HealthComponent.class).currentHealth;
+        }
         // inflict same amount of damage on fireball as on the target
         entity.send(new DoDamageEvent(oldTargetHealth - newTargetHealth, projectile.damageType));
 

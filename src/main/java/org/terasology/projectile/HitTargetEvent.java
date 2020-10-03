@@ -15,10 +15,10 @@
  */
 package org.terasology.projectile;
 
+import org.joml.Vector3f;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.AbstractConsumableEvent;
 import org.terasology.logic.location.LocationComponent;
-import org.terasology.math.geom.Vector3f;
 
 public class HitTargetEvent extends AbstractConsumableEvent {
     private EntityRef instigator;
@@ -71,7 +71,7 @@ public class HitTargetEvent extends AbstractConsumableEvent {
     public Vector3f getTargetLocation() {
         LocationComponent loc = target.getComponent(LocationComponent.class);
         if (loc != null) {
-            return loc.getWorldPosition();
+            return loc.getWorldPosition(new Vector3f());
         }
         return null;
     }
@@ -79,7 +79,7 @@ public class HitTargetEvent extends AbstractConsumableEvent {
     public Vector3f getInstigatorLocation() {
         LocationComponent loc = instigator.getComponent(LocationComponent.class);
         if (loc != null) {
-            return loc.getWorldPosition();
+            return loc.getWorldPosition(new Vector3f());
         }
         return new Vector3f();
     }

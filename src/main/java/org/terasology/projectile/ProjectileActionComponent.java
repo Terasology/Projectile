@@ -15,10 +15,10 @@
  */
 package org.terasology.projectile;
 
+import org.joml.Vector3f;
 import org.terasology.entitySystem.Component;
 import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.logic.health.EngineDamageTypes;
-import org.terasology.math.geom.Vector3f;
 
 public class ProjectileActionComponent implements Component {
     /**
