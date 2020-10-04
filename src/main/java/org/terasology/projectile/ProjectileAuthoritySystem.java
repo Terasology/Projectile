@@ -101,12 +101,12 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
         // rotates the entity to face in the direction of pointer
         Quaternionf rotation = new Quaternionf();
         Vector3f crossProduct = new Vector3f();
-        crossProduct.cross(initialDir, finalDir);
+        initialDir.cross(finalDir, crossProduct);
         rotation.x = crossProduct.x;
         rotation.y = crossProduct.y;
         rotation.z = crossProduct.z;
         rotation.w = (float) (Math.sqrt((initialDir.lengthSquared()) * (finalDir.lengthSquared())) +
-                initialDir.dot(finalDir));
+            initialDir.dot(finalDir));
         rotation.normalize();
         return rotation;
     }
