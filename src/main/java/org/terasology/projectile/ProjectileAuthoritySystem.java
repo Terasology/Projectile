@@ -163,7 +163,7 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
                         continue;
                     }
                 }
-                location.setWorldPosition(JomlUtil.from(result.getHitPoint()));
+                location.setWorldPosition(result.getHitPoint());
                 entity.saveComponent(location);
                 entity.send(new HitTargetEvent(targetEntity, entity, new Vector3f(),
                         projectileMotion.direction, result.getHitPoint(), result.getHitNormal()));
