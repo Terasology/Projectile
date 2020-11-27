@@ -62,7 +62,7 @@ public class AttractorAffectorFunction extends AffectorFunction<AttractorAffecto
                     displacementVector = new Vector3f(random.nextFloat(-.1f, .1f), random.nextFloat(-.1f, .1f), random.nextFloat(-.1f, .1f));
                     displacementSquared = displacementVector.lengthSquared();
                 }
-                acceleration = new Vector3f(displacementVector).normalize().div(displacementSquared).mul(-1.0f);
+                acceleration = new Vector3f(displacementVector).normalize().div(displacementSquared).negate();
             }
 
             acceleration.mul(strength);
