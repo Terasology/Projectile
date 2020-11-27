@@ -15,8 +15,8 @@
  */
 package org.terasology.projectile;
 
+import org.joml.Vector3f;
 import org.terasology.entitySystem.event.Event;
-import org.terasology.math.geom.Vector3f;
 
 public class FireProjectileEvent implements Event {
     private Vector3f origin;

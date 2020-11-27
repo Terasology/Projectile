@@ -15,8 +15,8 @@
  */
 package org.terasology.projectile.particleAffectors;
 
+import org.joml.Vector3f;
 import org.terasology.math.JomlUtil;
-import org.terasology.math.geom.Vector3f;
 import org.terasology.particles.ParticleData;
 import org.terasology.particles.ParticleDataMask;
 import org.terasology.particles.functions.affectors.AffectorFunction;
@@ -41,11 +41,11 @@ public class AttractorAffectorFunction extends AffectorFunction<AttractorAffecto
             return;
         }
 
-        Vector3f particlePos = JomlUtil.from(particleData.position);
+        Vector3f particlePos = particleData.position;
         for (Map.Entry<Vector3f, Float> attractor : component.attractors.entrySet()) {
             final Vector3f attractorOffset = attractor.getKey();
             float strength = attractor.getValue();
-            Vector3f attractorPos = new Vector3f(attractorOffset).add(component.origin.getWorldPosition());
+            Vector3f attractorPos = new Vector3f(attractorOffset).add(component.origin.getWorldPosition(new Vector3f()));
             Vector3f displacementVector = attractorPos.sub(particlePos);
             float displacementSquared = displacementVector.lengthSquared();
             Vector3f acceleration = new Vector3f();
@@ -62,12 +62,12 @@ public class AttractorAffectorFunction extends AffectorFunction<AttractorAffecto
                     displacementVector = new Vector3f(random.nextFloat(-.1f, .1f), random.nextFloat(-.1f, .1f), random.nextFloat(-.1f, .1f));
                     displacementSquared = displacementVector.lengthSquared();
                 }
-                acceleration = new Vector3f(displacementVector).normalize().div(displacementSquared).invert();
+                acceleration = new Vector3f(displacementVector).normalize().div(displacementSquared).negate();
             }
 
             acceleration.mul(strength);
             particleData.velocity.add(
-                    JomlUtil.from(acceleration.mul(delta))
+                acceleration.mul(delta)
             );
         }
     }

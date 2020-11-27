@@ -16,6 +16,8 @@
 package org.terasology.grenade;
 
 import com.google.common.collect.Lists;
+import org.joml.Vector3f;
+import org.joml.Vector3i;
 import org.terasology.audio.StaticSound;
 import org.terasology.audio.events.PlaySoundEvent;
 import org.terasology.entitySystem.entity.EntityBuilder;
@@ -28,8 +30,6 @@ import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.explosives.logic.ExplosionActionComponent;
 import org.terasology.logic.health.event.DoDamageEvent;
 import org.terasology.logic.location.LocationComponent;
-import org.terasology.math.geom.Vector3f;
-import org.terasology.math.geom.Vector3i;
 import org.terasology.projectile.HitTargetEvent;
 import org.terasology.projectile.ProjectileActionComponent;
 import org.terasology.registry.In;
@@ -99,7 +99,7 @@ public class GrenadeCollisionHandler extends BaseComponentSystem {
 
         Vector3i blockPos = new Vector3i();
         for (int i = 0; i < explosionComp.maxRange; i++) {
-            Vector3f direction = random.nextVector3f(1.0f);
+            Vector3f direction = random.nextVector3f(1.0f, new Vector3f());
 
             for (int j = 0; j < 4; j++) {
                 Vector3f target = new Vector3f(origin);
@@ -115,7 +115,8 @@ public class GrenadeCollisionHandler extends BaseComponentSystem {
                     EntityRef blockEntity = blockEntityRegistry.getEntityAt(blockPos);
                     // allow explosions to chain together,  but do not chain on the instigating block
                     if (!blockEntity.equals(instigatingBlockEntity) && blockEntity.hasComponent(ExplosionActionComponent.class)) {
-                        doExplosion(blockEntity.getComponent(ExplosionActionComponent.class), blockPos.toVector3f(), blockEntity);
+                        doExplosion(blockEntity.getComponent(ExplosionActionComponent.class), new Vector3f(blockPos),
+                            blockEntity);
                     } else {
                         blockEntity.send(new DoDamageEvent(explosionComp.damageAmount, explosionComp.damageType));
                     }

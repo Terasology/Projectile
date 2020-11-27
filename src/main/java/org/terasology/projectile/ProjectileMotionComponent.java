@@ -15,8 +15,8 @@
  */
 package org.terasology.projectile;
 
+import org.joml.Vector3f;
 import org.terasology.entitySystem.Component;
-import org.terasology.math.geom.Vector3f;
 
 /**
  * Component attached to projectiles which are in state of motion ,i.e have been fired.

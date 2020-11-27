@@ -15,6 +15,8 @@
  */
 package org.terasology.projectile;
 
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.engine.Time;
@@ -33,8 +35,6 @@ import org.terasology.logic.inventory.InventoryUtils;
 import org.terasology.logic.inventory.events.DropItemEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.math.JomlUtil;
-import org.terasology.math.geom.Quat4f;
-import org.terasology.math.geom.Vector3f;
 import org.terasology.physics.CollisionGroup;
 import org.terasology.physics.HitResult;
 import org.terasology.physics.Physics;
@@ -76,7 +76,7 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
             EntityRef inventoryEntity = inventoryManager.removeItem(event.getInstigator(), event.getInstigator(),
                 slot, false, 1);
             lastTime = time.getGameTime();
-            inventoryEntity.send(new FireProjectileEvent(JomlUtil.from(event.getOrigin()), JomlUtil.from(event.getDirection())));
+            inventoryEntity.send(new FireProjectileEvent(event.getOrigin(), event.getDirection()));
         }
     }
 
@@ -86,7 +86,7 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
         projectileMotionComponent.direction = new Vector3f(event.getDirection());
         projectileMotionComponent.currentVelocity = new Vector3f(event.getDirection()).mul(projectileActionComponent.initialVelocity);
         Vector3f pos = event.getOrigin();
-        LocationComponent location = new LocationComponent(pos);
+        LocationComponent location = new LocationComponent(JomlUtil.from(pos));
         location.setWorldScale(projectileActionComponent.iconScale);
         location.setWorldRotation(getRotationQuaternion(projectileActionComponent.initialOrientation, new Vector3f(event.getDirection())));
         entity.addOrSaveComponent(location);
@@ -97,16 +97,16 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
     /**
      * Rotates the projectile in the direction of motion
      */
-    private Quat4f getRotationQuaternion(Vector3f initialDir, Vector3f finalDir) {
+    private Quaternionf getRotationQuaternion(Vector3f initialDir, Vector3f finalDir) {
         // rotates the entity to face in the direction of pointer
-        Quat4f rotation = new Quat4f();
+        Quaternionf rotation = new Quaternionf();
         Vector3f crossProduct = new Vector3f();
-        crossProduct.cross(initialDir, finalDir);
+        initialDir.cross(finalDir, crossProduct);
         rotation.x = crossProduct.x;
         rotation.y = crossProduct.y;
         rotation.z = crossProduct.z;
         rotation.w = (float) (Math.sqrt((initialDir.lengthSquared()) * (finalDir.lengthSquared())) +
-                initialDir.dot(finalDir));
+            initialDir.dot(finalDir));
         rotation.normalize();
         return rotation;
     }
@@ -139,13 +139,13 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
             }
 
             LocationComponent location = entity.getComponent(LocationComponent.class);
-            Vector3f position = location.getWorldPosition();
+            Vector3f position = location.getWorldPosition(new Vector3f());
             projectileMotion.direction = new Vector3f(projectileMotion.currentVelocity).normalize();
             HitResult result;
             float displacement = Math.min(projectileMotion.currentVelocity.length() * delta,
                     projectile.maxDistance - projectileMotion.distanceTravelled);
             // 0.1 is added so that raytraces are inclusive of the endpoint
-            result = physicsRenderer.rayTrace(JomlUtil.from(position), JomlUtil.from(projectileMotion.direction), displacement + .01f, filter);
+            result = physicsRenderer.rayTrace(position, projectileMotion.direction, displacement + .01f, filter);
 
             if (result.isHit()) {
                 EntityRef targetEntity = result.getEntity();
@@ -163,10 +163,10 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
                         continue;
                     }
                 }
-                location.setWorldPosition(JomlUtil.from(result.getHitPoint()));
+                location.setWorldPosition(result.getHitPoint());
                 entity.saveComponent(location);
                 entity.send(new HitTargetEvent(targetEntity, entity, new Vector3f(),
-                        projectileMotion.direction, JomlUtil.from(result.getHitPoint()), JomlUtil.from(result.getHitNormal())));
+                        projectileMotion.direction, result.getHitPoint(), result.getHitNormal()));
                 if (!entity.exists() || !entity.hasComponent(ProjectileMotionComponent.class)) {
                     continue;
                 }
@@ -177,9 +177,9 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
             location.setWorldRotation(getRotationQuaternion(projectile.initialOrientation, projectileMotion.currentVelocity));
             projectileMotion.distanceTravelled += displacement;
 
-            if (projectile.affectedByGravity && Math.abs(projectileMotion.currentVelocity.getY()) < TERMINAL_VELOCITY) {
+            if (projectile.affectedByGravity && Math.abs(projectileMotion.currentVelocity.y()) < TERMINAL_VELOCITY) {
                 float update = G * delta;
-                projectileMotion.currentVelocity.subY(update);
+                projectileMotion.currentVelocity.y -= update;
             }
 
 
