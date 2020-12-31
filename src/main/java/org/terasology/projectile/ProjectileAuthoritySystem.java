@@ -28,13 +28,12 @@ import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.logic.common.ActivateEvent;
-import org.terasology.logic.health.event.DoDamageEvent;
 import org.terasology.logic.health.HealthComponent;
+import org.terasology.logic.health.event.DoDamageEvent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.inventory.InventoryUtils;
 import org.terasology.logic.inventory.events.DropItemEvent;
 import org.terasology.logic.location.LocationComponent;
-import org.terasology.math.JomlUtil;
 import org.terasology.physics.CollisionGroup;
 import org.terasology.physics.HitResult;
 import org.terasology.physics.Physics;
@@ -86,7 +85,7 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
         projectileMotionComponent.direction = new Vector3f(event.getDirection());
         projectileMotionComponent.currentVelocity = new Vector3f(event.getDirection()).mul(projectileActionComponent.initialVelocity);
         Vector3f pos = event.getOrigin();
-        LocationComponent location = new LocationComponent(JomlUtil.from(pos));
+        LocationComponent location = new LocationComponent(pos);
         location.setWorldScale(projectileActionComponent.iconScale);
         location.setWorldRotation(getRotationQuaternion(projectileActionComponent.initialOrientation, new Vector3f(event.getDirection())));
         entity.addOrSaveComponent(location);
@@ -117,7 +116,7 @@ public class ProjectileAuthoritySystem extends BaseComponentSystem implements Up
     @ReceiveEvent
     public void onDeactivate(DeactivateProjectileEvent event, EntityRef entity, ProjectileMotionComponent projectileMotion) {
         entity.removeComponent(ProjectileMotionComponent.class);
-        entity.send(new DropItemEvent(entity.getComponent(LocationComponent.class).getWorldPosition()));
+        entity.send(new DropItemEvent(entity.getComponent(LocationComponent.class).getWorldPosition(new Vector3f())));
     }
 
     /**
