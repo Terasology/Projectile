@@ -16,7 +16,6 @@
 package org.terasology.projectile.particleAffectors;
 
 import org.joml.Vector3f;
-import org.terasology.math.JomlUtil;
 import org.terasology.particles.ParticleData;
 import org.terasology.particles.ParticleDataMask;
 import org.terasology.particles.functions.affectors.AffectorFunction;
