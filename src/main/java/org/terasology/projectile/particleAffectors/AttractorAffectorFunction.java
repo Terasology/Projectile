@@ -16,10 +16,10 @@
 package org.terasology.projectile.particleAffectors;
 
 import org.joml.Vector3f;
-import org.terasology.particles.ParticleData;
-import org.terasology.particles.ParticleDataMask;
-import org.terasology.particles.functions.affectors.AffectorFunction;
-import org.terasology.utilities.random.Random;
+import org.terasology.engine.particles.ParticleData;
+import org.terasology.engine.particles.ParticleDataMask;
+import org.terasology.engine.particles.functions.affectors.AffectorFunction;
+import org.terasology.engine.utilities.random.Random;
 
 import java.util.Map;
 

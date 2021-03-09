@@ -15,7 +15,7 @@
  */
 package org.terasology.fireball;
 
-import org.terasology.entitySystem.Component;
+import org.terasology.engine.entitySystem.Component;
 
 public class FireballComponent implements Component {
 }

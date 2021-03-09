@@ -15,7 +15,7 @@
  */
 package org.terasology.grenade;
 
-import org.terasology.entitySystem.Component;
+import org.terasology.engine.entitySystem.Component;
 
 public class GrenadeComponent implements Component {
 }

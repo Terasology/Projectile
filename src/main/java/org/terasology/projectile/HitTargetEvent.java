@@ -16,9 +16,9 @@
 package org.terasology.projectile;
 
 import org.joml.Vector3f;
-import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.entitySystem.event.AbstractConsumableEvent;
-import org.terasology.logic.location.LocationComponent;
+import org.terasology.engine.entitySystem.entity.EntityRef;
+import org.terasology.engine.entitySystem.event.AbstractConsumableEvent;
+import org.terasology.engine.logic.location.LocationComponent;
 
 public class HitTargetEvent extends AbstractConsumableEvent {
     private EntityRef instigator;

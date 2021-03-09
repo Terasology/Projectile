@@ -15,7 +15,7 @@
  */
 package org.terasology.projectile;
 
-import org.terasology.entitySystem.event.AbstractConsumableEvent;
+import org.terasology.engine.entitySystem.event.AbstractConsumableEvent;
 
 public class DeactivateProjectileEvent extends AbstractConsumableEvent {
 }
