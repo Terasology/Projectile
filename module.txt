@@ -1,27 +1,27 @@
 {
-  "id": "Projectile",
-  "version": "1.2.1-SNAPSHOT",
-  "author": "niksoc",
-  "displayName": "Projectile",
-  "description": "Base module for projectiles",
-  "dependencies": [
-    {
-      "id": "CoreAssets",
-      "minVersion": "2.0.1"
-    },
-    {
-      "id": "Explosives",
-      "minVersion": "1.0.0"
-    },
-    {
-      "id": "Health",
-      "minVersion": "1.0.0"
-    },
-    {
-      "id": "Inventory",
-      "minVersion": "1.1.0"
-    }
-  ],
-  "serverSideOnly": false,
-  "isLibrary": true
+    "id": "Projectile",
+    "version": "1.2.1-SNAPSHOT",
+    "author": "niksoc",
+    "displayName": "Projectile",
+    "description": "Base module for projectiles",
+    "dependencies": [
+        {
+            "id": "CoreAssets",
+            "minVersion": "2.0.1"
+        },
+        {
+            "id": "Explosives",
+            "minVersion": "1.0.0"
+        },
+        {
+            "id": "Health",
+            "minVersion": "2.0.0-SNAPSHOT"
+        },
+        {
+            "id": "Inventory",
+            "minVersion": "1.1.0"
+        }
+    ],
+    "serverSideOnly": false,
+    "isLibrary": true
 }
