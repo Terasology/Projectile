@@ -21,7 +21,7 @@ import org.terasology.engine.entitySystem.event.ReceiveEvent;
 import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
 import org.terasology.engine.entitySystem.systems.RegisterMode;
 import org.terasology.engine.entitySystem.systems.RegisterSystem;
-import org.terasology.logic.health.event.DoDamageEvent;
+import org.terasology.module.health.events.DoDamageEvent;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class ProjectileCollisionHandler extends BaseComponentSystem {
