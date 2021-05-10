@@ -14,7 +14,6 @@
   "Health": {
     "maxHealth": 50,
     "currentHealth": 50,
-    "regenRate": 0,
     "destroyEntityOnNoHealth": true
   },
   "Light": {},
