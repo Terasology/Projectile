@@ -59,7 +59,7 @@ public class ProjectileActionComponent implements Component<ProjectileActionComp
     public Prefab damageType = EngineDamageTypes.PHYSICAL.get();
 
     @Override
-    public void copy(ProjectileActionComponent other) {
+    public void copyFrom(ProjectileActionComponent other) {
         this.iconScale = other.iconScale;
         this.initialOrientation = new Vector3f(other.initialOrientation);
         this.reusable = other.reusable;

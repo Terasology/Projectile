@@ -26,7 +26,7 @@ public class ProjectileMotionComponent implements Component<ProjectileMotionComp
     public float distanceTravelled = 0;
 
     @Override
-    public void copy(ProjectileMotionComponent other) {
+    public void copyFrom(ProjectileMotionComponent other) {
         this.currentVelocity = new Vector3f(other.currentVelocity);
         this.direction = new Vector3f(other.direction);
         this.distanceTravelled = other.distanceTravelled;

@@ -23,12 +23,12 @@ public class AttractorAffectorComponent implements Component<AttractorAffectorCo
     }
 
     @Override
-    public void copy(AttractorAffectorComponent other) {
+    public void copyFrom(AttractorAffectorComponent other) {
         this.attractors.clear();
         for (Map.Entry<Vector3f, Float> entry : other.attractors.entrySet()) {
             this.attractors.put(new Vector3f(entry.getKey()), entry.getValue());
         }
 
-        this.origin.copy(other.origin);
+        this.origin.copyFrom(other.origin);
     }
 }
