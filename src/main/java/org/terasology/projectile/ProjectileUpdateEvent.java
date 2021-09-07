@@ -15,7 +15,7 @@
  */
 package org.terasology.projectile;
 
-import org.terasology.engine.entitySystem.event.Event;
+import org.terasology.gestalt.entitysystem.event.Event;
 
 /**
  * Created by nikhil on 20/6/17.
