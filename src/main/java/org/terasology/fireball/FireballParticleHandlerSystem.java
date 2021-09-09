@@ -18,6 +18,7 @@ package org.terasology.fireball;
 import org.joml.Vector3f;
 import org.terasology.engine.entitySystem.entity.EntityRef;
 import org.terasology.engine.entitySystem.event.EventPriority;
+import org.terasology.engine.entitySystem.event.Priority;
 import org.terasology.engine.entitySystem.event.ReceiveEvent;
 import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
 import org.terasology.engine.entitySystem.systems.RegisterMode;
@@ -41,7 +42,8 @@ public class FireballParticleHandlerSystem extends BaseComponentSystem {
     ParticleSystemManager particleSystemManager;
 
 
-    @ReceiveEvent(priority = EventPriority.PRIORITY_LOW, components = {FireballComponent.class})
+    @Priority(EventPriority.PRIORITY_LOW)
+    @ReceiveEvent(components = FireballComponent.class)
     public void onFire(FireProjectileEvent event, EntityRef entity, ProjectileActionComponent projectileActionComponent) {
         ParticleEmitterComponent particleEmitterComponent = entity.getComponent(ParticleEmitterComponent.class);
         particleEmitterComponent.enabled = true;

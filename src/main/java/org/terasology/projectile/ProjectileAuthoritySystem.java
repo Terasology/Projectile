@@ -28,10 +28,6 @@ import org.terasology.engine.entitySystem.systems.RegisterMode;
 import org.terasology.engine.entitySystem.systems.RegisterSystem;
 import org.terasology.engine.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.engine.logic.common.ActivateEvent;
-import org.terasology.module.health.components.HealthComponent;
-import org.terasology.module.health.events.DoDamageEvent;
-import org.terasology.module.inventory.systems.InventoryManager;
-import org.terasology.module.inventory.systems.InventoryUtils;
 import org.terasology.engine.logic.inventory.events.DropItemEvent;
 import org.terasology.engine.logic.location.LocationComponent;
 import org.terasology.engine.physics.CollisionGroup;
@@ -39,6 +35,10 @@ import org.terasology.engine.physics.HitResult;
 import org.terasology.engine.physics.Physics;
 import org.terasology.engine.physics.StandardCollisionGroup;
 import org.terasology.engine.registry.In;
+import org.terasology.module.health.components.HealthComponent;
+import org.terasology.module.health.events.DoDamageEvent;
+import org.terasology.module.inventory.systems.InventoryManager;
+import org.terasology.module.inventory.systems.InventoryUtils;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class ProjectileAuthoritySystem extends BaseComponentSystem implements UpdateSubscriberSystem {

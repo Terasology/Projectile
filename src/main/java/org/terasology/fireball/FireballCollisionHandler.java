@@ -20,9 +20,9 @@ import org.terasology.engine.entitySystem.event.ReceiveEvent;
 import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
 import org.terasology.engine.entitySystem.systems.RegisterMode;
 import org.terasology.engine.entitySystem.systems.RegisterSystem;
+import org.terasology.engine.particles.components.ParticleEmitterComponent;
 import org.terasology.module.health.components.HealthComponent;
 import org.terasology.module.health.events.DoDamageEvent;
-import org.terasology.engine.particles.components.ParticleEmitterComponent;
 import org.terasology.projectile.HitTargetEvent;
 import org.terasology.projectile.ProjectileActionComponent;
 
