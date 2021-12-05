@@ -20,7 +20,8 @@ which is intercepted in a CollisionHandler that you can provide specifying custo
 ```java
 public class ProjectileCollisionHandler extends BaseComponentSystem {
     // Set handler to low priority as it contains override-able default behaviour
-    @ReceiveEvent(priority = EventPriority.PRIORITY_LOW)
+    @Priority(EventPriority.PRIORITY_LOW)
+    @ReceiveEvent
     public void onCollision(HitTargetEvent event, EntityRef entity, ProjectileActionComponent projectile) {
 	    // inflict damage on target
         event.getTarget().send(new DoDamageEvent(projectile.damageAmount, projectile.damageType));

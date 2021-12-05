@@ -16,13 +16,13 @@
 package org.terasology.fireball;
 
 import org.terasology.engine.entitySystem.entity.EntityRef;
-import org.terasology.engine.entitySystem.event.ReceiveEvent;
 import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
 import org.terasology.engine.entitySystem.systems.RegisterMode;
 import org.terasology.engine.entitySystem.systems.RegisterSystem;
+import org.terasology.engine.particles.components.ParticleEmitterComponent;
+import org.terasology.gestalt.entitysystem.event.ReceiveEvent;
 import org.terasology.module.health.components.HealthComponent;
 import org.terasology.module.health.events.DoDamageEvent;
-import org.terasology.engine.particles.components.ParticleEmitterComponent;
 import org.terasology.projectile.HitTargetEvent;
 import org.terasology.projectile.ProjectileActionComponent;
 
